@@ -292,11 +292,18 @@ backend   | 🔌 Initializing Retriever...
 backend   | 📚 Retriever loaded collection: nvidia_earnings_calls
 ```
 
+<p align="center">
+  <img src="img/Screenshot 2025-11-20-4.png" width="500"/>
+</p>
+
+
 ### 9. arreter tout
 
 ```
 make down
 ```
+
+
 
 ---
 
