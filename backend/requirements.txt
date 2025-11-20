@@ -1,10 +1,6 @@
 pydantic
 fastapi
 uvicorn[standard]
-# transformers
-# torch
-# accelerate
-# httpx
 chromadb
 datasets
 sentence_transformers

@@ -2,12 +2,8 @@
 
 import numpy as np
 from functools import lru_cache
-
 from sentence_transformers import SentenceTransformer
-from chromadb.utils import embedding_functions
-
 from chromadb import HttpClient
-
 from app.config import settings
 
 
@@ -28,13 +24,6 @@ def get_embedder():
     print("🚀 Loading embedding model:", settings.EMBEDDING_MODEL)
     return SentenceTransformer(settings.EMBEDDING_MODEL)
 
-# @lru_cache(maxsize=1)  # modèle chargé UNE seule fois
-# def get_embedder():
-#     print("🚀 Loading embedding model:", settings.EMBEDDING_MODEL)
-#     return embedding_functions.SentenceTransformerEmbeddingFunction(
-#         model_name=settings.EMBEDDING_MODEL
-#     )
-
 
 def embed(texts):
     model = get_embedder()
@@ -54,7 +43,7 @@ def test_retriever():
 
     query = "What did Jensen Huang say about data center growth?"
 
-    # 🔥 MUST embed here → HTTP Chroma can NOT embed
+    # MUST embed here → HTTP Chroma can NOT embed
     query_emb = embed([query])
 
     results = col.query(

@@ -18,7 +18,6 @@ class Settings(BaseSettings):
     # -----------------------------
     CHROMA_HOST: str = Field(default="localhost")
     CHROMA_PORT: int = Field(default=8000)
-    # CHROMA_PERSIST_DIR: str = Field(default="chroma_db")
 
     # -----------------------------
     #   MODEL API SETTINGS
@@ -34,16 +33,10 @@ class Settings(BaseSettings):
     # -----------------------------
     EMBEDDING_MODEL: str = Field(default="BAAI/bge-large-en-v1.5")
     K: int = Field(default=10)
+    
     # -----------------------------
     #   PATHS FOR LOCAL DATA
     # -----------------------------
-    # DATA_DIR: str = Field(default="data")
-    # CHUNKS_FILENAME: str = Field(default="nvidia_chunks.jsonl")
-
-    # @property
-    # def CHUNKS_FILE(self) -> str:
-    #     return os.path.join(self.DATA_DIR, self.CHUNKS_FILENAME)
-
     PROMPTS_DIR: str = Field(default="/prompts")
     PROMPT_FILENAME: str = Field(default="nvidia_prompt.txt")
     RAG_PROMPT_FILENAME: str = Field(default="nvidia_rag_prompt.txt")

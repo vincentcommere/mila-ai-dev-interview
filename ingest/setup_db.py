@@ -3,13 +3,10 @@
 import json
 import numpy as np
 from functools import lru_cache
-
 from chromadb import HttpClient
 from sentence_transformers import SentenceTransformer
-# from chromadb.utils import embedding_functions
+from config import settings
 
-
-from config import settings   # ✔ ton vrai fichier config.py dans app/
 
 # ------------------------------------------
 # 🔌 CHROMA CLIENT
