@@ -23,9 +23,9 @@ class Settings(BaseSettings):
     # -----------------------------
     #   MODEL API SETTINGS
     # -----------------------------
-    API_URL: str = Field(..., description="URL du provider LLM")
+    API_URL: str = Field(..., description="URL du provider LLM", default="https://router.huggingface.co/v1/chat/completions")
     API_KEY: SecretStr = Field(..., description="API key (sécurisée)")
-    MODEL: str = Field(..., description="Nom du modèle LLM")
+    MODEL: str = Field(..., description="Nom du modèle LLM", default="meta-llama/Llama-3.1-8B-Instruct")
     PROVIDER: str = Field(default="fireworks-ai")
     RAG_COLLECTION: str = Field(default="nvidia_earnings_calls")
 

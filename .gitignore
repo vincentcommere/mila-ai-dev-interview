@@ -79,7 +79,6 @@ chroma-data/
 index/
 
 # Raw data
-data/
 backend/data/
 backend/chunks/
 frontend/.next/
@@ -90,9 +89,5 @@ frontend/.next/
 node_modules/
 
 chroma-index
-chroma_db
-chroma
-chroma-data
 dist
 .venv
-data

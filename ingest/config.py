@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     # -----------------------------
     #   CHROMA SETTINGS
     # -----------------------------
-    CHROMA_HOST: str = Field(default="chroma")
+    CHROMA_HOST: str = Field(default="localhost")
     CHROMA_PORT: int = Field(default=8001)
 
     # -----------------------------
