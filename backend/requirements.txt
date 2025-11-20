@@ -1,0 +1,13 @@
+pydantic
+fastapi
+uvicorn[standard]
+# transformers
+# torch
+# accelerate
+# httpx
+chromadb
+datasets
+sentence_transformers
+langchain_text_splitters
+pydantic_settings
+numpy

@@ -1,0 +1,98 @@
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+*.pytest_cache/
+*.coverage
+.pytest_cache/
+coverage/
+
+# --- Virtual env ---
+venv/
+.env
+env/
+.venv/
+
+# --- IDE ---
+.vscode/
+.idea/
+
+# --- OS/system files ---
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+logs/
+*.log
+
+# --- Chroma database ---
+chroma_db/
+chroma/
+*.sqlite3
+index/
+
+# --- Raw data & chunks ---
+data/raw/*
+data/chunks.json
+
+# --- Test files ---
+test*
+tests/
+*.test.py
+
+# --- Cache ---
+cache/
+*.cache
+tmp/
+temp/
+
+# --- Docker ---
+*.pid
+docker-data/
+.dockerignore
+
+# --- Build artifacts ---
+dist/
+build/
+deprecated/
+old
+*.jsonl
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# ChromaDB
+chroma/
+chroma_db/
+chroma-data/
+*.sqlite3
+index/
+
+# Raw data
+data/
+backend/data/
+backend/chunks/
+frontend/.next/
+
+# Mac
+.DS_Store
+#Node
+node_modules/
+
+chroma-index
+chroma_db
+chroma
+chroma-data
+dist
+.venv
+data
