@@ -280,16 +280,17 @@ make backend-nocache
 make frontend-nocache
 ```
 
-### 7. Patienter quelque minute a lissue de la premiere reautet afin que le retriever sinisalise ( load collection, load embeddings models)
+### 7. Ouvrir le frontend
+
+[http://localhost:80](http://localhost:80)
+
+
+### 8. Patienter quelque minute a lissue de la premiere requete afin que le retriever sinisalise ( load collection, load embeddings models)
 
 ```
 backend   | 🔌 Initializing Retriever...
 backend   | 📚 Retriever loaded collection: nvidia_earnings_calls
 ```
-
-### 8. Ouvrir le frontend
-
-[http://localhost:80](http://localhost:80)
 
 ### 9. arreter tout
 
