@@ -2,7 +2,7 @@
 
 export async function askDumbQuestion(query) {
   try {
-    const res = await fetch("/api/dumb", {
+    const res = await fetch("/api/dummy", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ "query": query }),

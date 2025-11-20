@@ -17,8 +17,8 @@ retriever = get_retriever()
 async def ask_question():
     return {"answer": "test ok !"}
 
-@router.post("/dumb")
-async def dumb_route(payload: Payload):
+@router.post("/dummy")
+async def dummy_route(payload: Payload):
     return {"answer": f"You said: {payload.query}"}
 
 @router.post("/llm")

@@ -74,14 +74,14 @@ Pourquoi ce chunking ?
 
 ### 2.4. Choix de l’architecture logicielle
 
-Architecture Microservices, composée de :
 
-#### **1. Service d’ingestion (job one-shot)**
+#### **1. One-Time manual d’ingestion (job one-shot)**
 
-* Dockerfile dédié
-* charge les JSONL
+* charge les JSONL et chunks
 * compute embeddings
 * insère dans Chroma
+
+Architecture Microservices, composée de :
 
 #### **2. Backend (FastAPI)**
 
@@ -197,45 +197,19 @@ Pourquoi un container séparé ?
 
 #### `POST /query`
 
-Input :
-
-```json
-{ "question": "What did Jensen say about gaming revenue in Q4 2023?" }
-```
-
-Process :
-
-1. embedded la question
-2. cherche les vecteurs les plus proches dans Chroma
-3. construit un prompt
-4. envoie au modèle HF
-5. retourne une réponse + chunks sources
-
-Output :
-
-```json
-{
-  "answer": "...",
-  "sources": [
-    { "id": "...", "text": "..." }
-  ]
-}
-```
+/ # health check return {"answer":"test ok !"}
+/dummy # return user input to validation frontend backend comunication
+/llm # answer using llm without rag
+/rag # implement le rag tel que demande
 
 ---
 
 ## 8. 🎨 **Frontend Description**
 
 * UI simple en React
-* champ de texte pour poser une question
-* affichage des résultats avec highlight
-* affichage des sources
+* trois composents principaux ChatBubble.jsx, InputBox.jsx, Messages.jsx
+* responsive, extensilble au texte de differente taille
 
-Pourquoi React ?
-
-* rapide à mettre en place
-* facile à dockeriser avec Nginx
-* moderne et maintenable
 
 ---
 
@@ -244,7 +218,8 @@ Pourquoi React ?
 * gère le **routing** (frontend ↔ backend)
 * sert le build React en mode performant
 * produit une architecture plus réaliste
-* ajoute CORS, headers de sécurité
+* uniformise la app entry point 
+* localhost reverse proxy
 * permet SSL plus tard
 
 ---
@@ -256,6 +231,7 @@ Pourquoi React ?
 * possibilité de scaling indépendant
 * permet ingestion job séparé
 * pratique pour la persistance via volumes
+* separation of concernes
 
 ---
 
@@ -268,50 +244,83 @@ git clone <repo-url>
 cd project
 ```
 
-### 2. Ajouter `.env`
+### 2. Ajouter `./backend/.env`
 
 ```
-HF_API_KEY=xxxxx
+API_KEY=xxxxx
 ```
 
-### 3. Lancer l’application
+### 3. Build/Run la vector DB 
 
 ```
-docker compose up -d --build
+make chroma
 ```
 
-### 4. Vérifier l’ingestion
+### 4. executer le one-time ingest
 
 ```
-docker logs ingest -f
+cd ingest
+python3 -m venv venv
+. venv/bin/activate  (Mac only)
+pip install -r requirements.txt
+python setup_db.py 
+deactivate
+cd ..
 ```
 
-Si succès :
+### 5. Build/Run backend
 
 ```
-🔥 Successfully inserted XXXX vectors
+make backend-nocache
 ```
 
-### 5. Ouvrir le frontend
+### 6. Build/Run frontend
+
+```
+make frontend-nocache
+```
+
+### 7. Patienter quelque minute a lissue de la premiere reautet afin que le retriever sinisalise ( load collection, load embeddings models)
+
+```
+backend   | 🔌 Initializing Retriever...
+backend   | 📚 Retriever loaded collection: nvidia_earnings_calls
+```
+
+### 8. Ouvrir le frontend
 
 [http://localhost:80](http://localhost:80)
+
+### 9. arreter tout
+
+```
+make down
+```
 
 ---
 
 ## 12. 💬 **Exemples de questions**
 
 ```
-"What did Jensen say about Data Center business growth?"
-"How did Gaming revenue evolve in Q2 2023?"
-"What guidance was provided for next quarter?"
+● “What did Nvidia report about revenue last quarter?”
+● “Summarize Nvidia’s Q2 2024 guidance.”
+● “List key risks mentioned by Nvidia in Q4 FY23.”
 ```
-
+<p align="center">
+  <img src="img/Screenshot 2025-11-19-1.png" width="450"/>
+</p>
+<p align="center">
+  <img src="img/Screenshot 2025-11-19-2.png" width="450"/>
+</p>
+<p align="center">
+  <img src="img/Screenshot 2025-11-19-3.png" width="450"/>
+</p>
 ---
 
 ## 13. ⚖️ **Trade-offs**
 
 * J’ai choisi FastAPI plutôt que LangChain pour plus de contrôle.
-* J’ai choisi Chroma plutôt que FAISS pour simplifier le Docker networking.
+* J’ai choisi Chroma plutôt pour simplifier le Docker networking.
 * Chunking simple 500 tokens : ok pour un prototype, mais améliorable.
 * Pas d’auth backend — trop long pour un proof-of-concept.
 * Pas de citation exacte des paragraphes (option possible).
@@ -320,32 +329,32 @@ Si succès :
 
 ## 14. 🤖 **Usage de GenAI dans le développement**
 
-* génération initiale des modèles d’architectures
-* tests de chunking et pipeline embedding
-* génération partielle de code boilerplate
-* optimisation ultrarapide du Dockerfile et services
-* documentation + rapport généré en LLM
+* jai utilise chat gpt, je ne genere pas de code que je ne comprend ou ne metreise pas jutilise lia pour accelerer ce que je veux faire. je nai pas utilise cursor ou co pilot, je demande egalement quels sont els amelioration que je peut faire, puis jaccepte ou nom cell ci 
 
 ---
 
 ## 15. 🚀 **Suggestions de futurs travaux**
 
-* utiliser un modèle ONNX pour réduire l’image
-* intégrer reranking **bge-reranker**
-* ajouter summarization des earnings calls
-* améliorer le frontend (citations, highlights)
-* support multi-compagnies / multi-documents
-* auth Oauth2 + logs d’usage
-* CI/CD GitHub actions + tests unittaires
+
+Perfomance LLM
+  - embeddings model
+  - RAG search methodes
+  - chunks methodes
+  - intégrer reranking **bge-reranker**
+  - model embedding plus leger
+
+Perfomance Architecture
+- reduiction du build taille des images peuvent etre reduit a parti dimage alpine
+- reduiction du build les utiliseation de certainses librairies peuvent etre optimiset (Sentence Transformer qui utilise torch par exemple)
+- Vector DB setup up
+- At startup, retriever inittialisation peut etre optimise car il prend plusieurs minutes, les premieres requestes genere parfois des A 504 Gateway Timeout error 
+
+Software
+- Frontend
+- authentification
+- test unitaire
+- test integration
+- linting (blakc, flake8) et typing
+
 
 ---
-
-# 🎉 Rapport terminé
-
-Si tu veux :
-
-* une **version PDF**
-* une **version Markdown GitHub**
-* un **diagramme mermaid**
-* une **présentation PowerPoint** générée
-  → Dis-moi, je te la génère.

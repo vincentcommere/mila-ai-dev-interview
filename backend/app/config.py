@@ -5,6 +5,7 @@ from pydantic import Field
 from pydantic import SecretStr
 import os
 
+
 class Settings(BaseSettings):
     # -----------------------------
     #   APP SETTINGS
@@ -16,7 +17,7 @@ class Settings(BaseSettings):
     # -----------------------------
     #   CHROMA SETTINGS
     # -----------------------------
-    CHROMA_HOST: str = Field(default="localhost")
+    CHROMA_HOST: str = Field(default="chroma")
     CHROMA_PORT: int = Field(default=8000)
 
     # -----------------------------
