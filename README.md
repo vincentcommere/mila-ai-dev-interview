@@ -4,8 +4,8 @@
 
 Le défi consiste à construire une application capable de :
 
-* **ingérer des transcripts d'Earnings Calls NVIDIA**
-* **chunker, vectoriser et stocker ces informations dans une base vectorielle**
+* **creer un chatbot ingérer avec des transcripts d'Earnings Calls NVIDIA**
+* **filtrer, chunker, vectoriser et stocker ces informations dans une base vectorielle**
 * **fournir une interface permettant de poser des questions**
 * **retrouver rapidement des passages pertinents via un retrieve-and-generate (RAG)**
 * **servir des réponses fiables et contextualisées**
@@ -26,18 +26,20 @@ L’objectif général :
 
 J'ai choisi :
 
-> **BAAI/bge-large-en-v1.5**
-> via SentenceTransformers (ou une alternative ONNX plus rapide).
+> **BAAI/bge-base-en-v1.5**
+> via SentenceTransformers (ou une alternative ONNX plus rapide) a des fin de demonstration de competences (du local load) dans le cadre du test. 
+> utilisation via Hugging face api plus simple (sur le model du call LLM)
 
 🎯 Pourquoi ce modèle ?
 
+* petite taille
 * excellent score sur MTEB (benchmark SOTA)
 * très adapté aux tasks de **retrieval et semantic search**
 * embeddings très cohérents pour des documents business / earnings calls
 * stable et mature
 
 *(Si version ONNX : modèle plus rapide, pas besoin de PyTorch → idéal Docker slim.)*
-
+*(Si plus gros modèle, passer via API call plutôt que local load)
 ---
 
 ### 2.2. Choix du Vector Store : **ChromaDB**
@@ -46,11 +48,11 @@ J'ai choisi :
 
 Pourquoi Chroma ?
 
+* facile à containeriser
 * API HTTP simple
 * CRUD sur embeddings rapide
 * support natif cosine similarity
 * stockage persistant
-* facile à containeriser
 * intègre parfaitement avec Python
 
 ---
@@ -58,11 +60,6 @@ Pourquoi Chroma ?
 ### 2.3. Stratégie de chunking
 
 * Chunk **500 tokens**, overlap 100
-* Format JSONL avec :
-
-  ```json
-  { "id": "...", "text": "...", "metadata": { "year": "...", "quarter": "..." } }
-  ```
 
 Pourquoi ce chunking ?
 
@@ -85,51 +82,51 @@ Architecture Microservices, composée de :
 
 #### **2. Backend (FastAPI)**
 
-* expose `/query`
-* récupère embeddings pertinents depuis Chroma
-* prépare un prompt pour HuggingFace LLM
+* expose `/rag`
+* récupère embeddings pertinents depuis Chroma - approche local loading
+* prépare un prompt pour HuggingFace LLM - approche API Call
 * génère la réponse
 
 #### **3. Frontend (React/Vite)**
 
 * interface minimaliste pour poser une question
-* affiche réponse + sources
+* affiche réponse dans un chat
 
-#### **4. Reverse proxy — Nginx**
+#### **4. Frontend (Nginx)**
 
+* reverse proxy
 * gère le routing
 * sert le frontend
 * protège le backend
-* force CORS & SSL si besoin
 
-#### **5. Vector DB — Chroma container**
+#### **5. Vector DB — Chroma (container)**
 
 * indépendant
 * persistant
 * évite d'exploser le backend si Chroma reload
 * scalable horizontalement
+* Single responsability
 
 ---
 
 ## 3. 📊 **Data & Preprocessing**
 
-* Earnings Calls récupérés en fichiers `.txt`
+* Earnings Calls récupérés en fichiers `.jsonl`
 * Nettoyage :
-
-  * suppression timestamps
-  * normalisation whitespaces
+  * restructuration / epuration
   * découpe en blocs par speaker
 * Tokenisation + chunking
-* Génération d’un **fichier `data/nvidia_chunks.jsonl`**
+* Génération d’un **fichier `data/nvidia_chunks.jsonl`** pour ingestion dans chroma
 
 ---
 
-## 4. 🧹 **Vectorisation**
+## 4. 🧹 **Vectorisation** - choix du local loading
 
-* modèle : `BAAI/bge-large-en-v1.5`
+  NB :  choix du local loading volontaire pour la demo
+* modèle : `BAAI/bge-base-en-v1.5`
 * embeddings normalisés (`L2 norm`)
 * stockage dans Chroma via l’API HTTP
-* structure d’index : HNSW, metric = cosine
+* structure d’index : metric = cosine
 
 ---
 
@@ -138,11 +135,9 @@ Architecture Microservices, composée de :
 Chroma stocke :
 
 * `ids`
-* `documents`
+* `transcript`
 * `metadatas`
 * `embeddings`
-
-Accès rapide (O(log n)) via index HNSW.
 
 Pourquoi un container séparé ?
 
@@ -195,7 +190,7 @@ Pourquoi un container séparé ?
 
 ### Endpoints
 
-#### `POST /query`
+#### `POST`
 
 / # health check return {"answer":"test ok !"}
 /dummy # return user input to validation frontend backend comunication
@@ -246,6 +241,9 @@ cd mila-ai-dev-interview
 
 ### 2. Ajouter `./backend/.env` votre hugginface API_KEY pour inference endpoints
 
+[https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
+
+
 ```
 API_KEY=xxxxx
 ```
@@ -259,13 +257,7 @@ make chroma-nocache
 ### 4. executer le one-time ingest  (Mac only)
 
 ```
-cd ingest
-python3 -m venv venv
-. venv/bin/activate
-pip install -r requirements.txt
-python setup_db.py 
-deactivate
-cd ..
+make db_setup
 ```
 
 ### 5. Build/Run backend
@@ -330,36 +322,41 @@ make down
 * Pas d’auth backend — trop long pour un proof-of-concept.
 * Pas de citation exacte des paragraphes (option possible).
 
+
 ---
 
 ## 14. 🤖 **Usage de GenAI dans le développement**
 
-* jai utilise chat gpt, je ne genere pas de code que je ne comprend ou ne metreise pas jutilise lia pour accelerer ce que je veux faire. je nai pas utilise cursor ou co pilot, je demande egalement quels sont els amelioration que je peut faire, puis jaccepte ou nom cell ci 
+* J’utilise ChatGPT comme un accélérateur dans mon processus de développement, tout en conservant une maîtrise complète du code produit.
+* Je ne génère jamais de code que je ne comprends pas ou que je ne suis pas capable d’adapter moi-même.
 
+* Je n’utilise pas d’outils de génération automatique tels que Cursor ou GitHub Copilot.
+* Lorsque je demande des suggestions d’amélioration, je les évalue systématiquement et je décide moi-même de leur pertinence avant de les intégrer.
 ---
 
 ## 15. 🚀 **Suggestions de futurs travaux**
 
 
-Perfomance LLM
-  - embeddings model
-  - RAG search methodes
-  - chunks methodes
-  - intégrer reranking **bge-reranker**
-  - model embedding plus leger
+🔧 Amélioration des performances LLM
 
-Perfomance Architecture
-- reduiction du build taille des images peuvent etre reduit a parti dimage alpine
-- reduiction du build les utiliseation de certainses librairies peuvent etre optimiset (Sentence Transformer qui utilise torch par exemple)
-- Vector DB setup up
-- At startup, retriever inittialisation peut etre optimise car il prend plusieurs minutes, les premieres requestes genere parfois des A 504 Gateway Timeout error 
+* Optimisation du modèle d’embeddings et passage de celui-ci en API call
+* Exploration et amélioration des méthodes de recherche RAG
+* Ajustement des stratégies de découpage (chunking)
+* Intégration d’un modèle de reranking (ex. bge-reranker)
+* Utilisation d’un modèle d’embedding plus léger et plus rapide
 
-Software
-- Frontend
-- authentification
-- test unitaire
-- test integration
-- linting (blakc, flake8) et typing
+🏗️ Optimisation de l’architecture
 
+* Réduction de la taille des images Docker (par ex. utilisation d’images Alpine)
+* Optimisation de certaines librairies lourdes (ex. Sentence Transformers avec Torch)
+* Mise en place ou optimisation du Vector DB
+* Optimisation de l’initialisation du retriever au démarrage (actuellement plusieurs minutes), afin d’éviter les erreurs 504 Gateway Timeout lors des premières requêtes
 
+🧑‍💻 Améliorations logicielles
+
+* Amélioration du frontend
+* Implémentation ou optimisation de l’authentification
+* Ajout de tests unitaires
+* Ajout de tests d’intégration
+* Ajout ou amélioration du linting (Black, Flake8) et du typing
 ---

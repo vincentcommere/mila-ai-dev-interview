@@ -21,17 +21,17 @@ chroma-nocache:
 # ---------------------------------------------------------
 # Ingestion (LOCAL SCRIPT VERSION)
 # ---------------------------------------------------------
-# db_setup:
-# 	@echo "📥 Running local ingestion..."
-# 	@cd ingest && \
-# 	python3 -m venv venv && \
-# 	. venv/bin/activate && \
-# 	pip install -r requirements.txt && \
-# 	python setup_db.py && \
-# 	deactivate && \
-# 	cd ..
-# 	@echo "🟢 Ingestion completed."
-
+db_setup:
+	@bash -c "\
+		echo '⏳ Installing dependencies...' && \
+		python3 -m venv venv && \
+		. venv/bin/activate && \
+		pip install -r ./ingest/requirements.txt && \
+		echo '🔗 Running setup_db.py...' && \
+		python ./ingest/setup_db.py && \
+		deactivate && \
+		rm -rf venv \
+	"
 # ---------------------------------------------------------
 # Backend
 # ---------------------------------------------------------

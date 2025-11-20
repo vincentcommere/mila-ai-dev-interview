@@ -43,13 +43,14 @@ class Settings(BaseSettings):
     # -----------------------------
     #   EMBEDDINGS
     # -----------------------------
-    EMBEDDING_MODEL: str = Field(default="BAAI/bge-large-en-v1.5")
+    EMBEDDING_MODEL: str = Field(default="BAAI/bge-base-en-v1.5")
     K: int = Field(default=10)
     
     # -----------------------------
     #   PATHS FOR LOCAL DATA
     # -----------------------------
-    PROMPTS_DIR: str = Field(default="/prompts")
+    # PROMPTS_DIR: str = Field(default="/prompts")
+    PROMPTS_DIR: str = Field(default="/app/prompts")
     PROMPT_FILENAME: str = Field(default="nvidia_prompt.txt")
     RAG_PROMPT_FILENAME: str = Field(default="nvidia_rag_prompt.txt")
 

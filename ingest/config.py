@@ -20,13 +20,13 @@ class Settings(BaseSettings):
     # -----------------------------
     #   EMBEDDINGS
     # -----------------------------
-    EMBEDDING_MODEL: str = Field(default="BAAI/bge-large-en-v1.5")
+    EMBEDDING_MODEL: str = Field(default="BAAI/bge-base-en-v1.5")
     K: int = Field(default=10)
     
     # -----------------------------
     #   PATHS FOR LOCAL DATA
     # -----------------------------
-    DATA_DIR: str = Field(default="data")
+    DATA_DIR: str = Field(default="./ingest/data")
     CHUNKS_FILENAME: str = Field(default="nvidia_chunks.jsonl")
 
     @property
