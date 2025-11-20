@@ -303,8 +303,6 @@ backend   | 📚 Retriever loaded collection: nvidia_earnings_calls
 make down
 ```
 
-
-
 ---
 
 ## 12. 💬 **Exemples de questions**
