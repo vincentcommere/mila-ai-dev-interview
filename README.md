@@ -240,11 +240,11 @@ Pourquoi un container séparé ?
 ### 1. Clone
 
 ```
-git clone <repo-url>
-cd project
+git clone https://github.com/vincentcommere/mila-ai-dev-interview.git
+cd mila-ai-dev-interview 
 ```
 
-### 2. Ajouter `./backend/.env`
+### 2. Ajouter `./backend/.env` votre hugginface API_KEY pour inference endpoints
 
 ```
 API_KEY=xxxxx
@@ -253,15 +253,15 @@ API_KEY=xxxxx
 ### 3. Build/Run la vector DB 
 
 ```
-make chroma
+make chroma-nocache
 ```
 
-### 4. executer le one-time ingest
+### 4. executer le one-time ingest  (Mac only)
 
 ```
 cd ingest
 python3 -m venv venv
-. venv/bin/activate  (Mac only)
+. venv/bin/activate
 pip install -r requirements.txt
 python setup_db.py 
 deactivate
@@ -319,7 +319,6 @@ make down
 
 ## 13. ⚖️ **Trade-offs**
 
-* J’ai choisi FastAPI plutôt que LangChain pour plus de contrôle.
 * J’ai choisi Chroma plutôt pour simplifier le Docker networking.
 * Chunking simple 500 tokens : ok pour un prototype, mais améliorable.
 * Pas d’auth backend — trop long pour un proof-of-concept.

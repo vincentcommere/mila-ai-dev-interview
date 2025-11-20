@@ -21,8 +21,8 @@ services:
       CHROMA_PORT: 8000         # interne
     depends_on:
       - chroma
-    volumes:
-      - ./backend/prompts:/prompts
+    # volumes:
+    #   - ./backend/prompts:/prompts
     networks:
       - app-network
     env_file:
