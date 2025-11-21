@@ -192,10 +192,17 @@ Pourquoi un container séparé ?
 
 #### `POST`
 
-/ # health check return {"answer":"test ok !"}
-/dummy # return user input to validation frontend backend comunication
-/llm # answer using llm without rag
-/rag # implement le rag tel que demande
+- `/`  
+  Health check – retourne : `{"answer": "test ok !"}`
+
+- `/dummy`  
+  Retourne tel quel l’input utilisateur (pour valider la communication frontend ↔ backend)
+
+- `/llm`  
+  Appelle le LLM **sans** RAG et retourne une réponse générée.
+
+- `/rag`  
+  Implémente le RAG tel que spécifié (retriever + contexte + appel LLM).
 
 ---
 
@@ -277,8 +284,7 @@ make frontend-nocache
 [http://localhost:80](http://localhost:80)
 
 
-### 8. Patienter quelque minute a lissue de la premiere requete afin que le retriever sinisalise ( load collection, load embeddings models)
-
+### 8. Après la première requête, prévoir un délai de quelques minutes pour permettre l’initialisation complète du retriever (chargement de la collection et du modèle d’embeddings).
 ```
 backend   | 🔌 Initializing Retriever...
 backend   | 📚 Retriever loaded collection: nvidia_earnings_calls
